@@ -50,7 +50,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
             },
           ],
           image: {
-            src: `${NEXT_PUBLIC_URL}/poster-w-squiggle.png`,
+            src: `${NEXT_PUBLIC_URL}/pls-enter.png`,
             aspectRatio: '1:1',
           },
           input: {
@@ -119,7 +119,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
           },
         ],
         image: {
-          src: `${NEXT_PUBLIC_URL}/poster-w-squiggle.png`,
+          src: `${NEXT_PUBLIC_URL}/not-found.png`,
           aspectRatio: '1:1',
         },
         input: {
