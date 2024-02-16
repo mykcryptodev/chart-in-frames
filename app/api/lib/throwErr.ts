@@ -7,11 +7,11 @@ export const throwErr = (img: string) => {
     getFrameHtmlResponse({
       buttons: [
         {
-          label: 'Load token chart!',
+          label: 'Load chart!',
         },
         {
           action: 'link',
-          label: 'Thank you, Coingecko!',
+          label: 'Ty, Coingecko!',
           target: 'https://www.coingecko.com',
         },
       ],
