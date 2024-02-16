@@ -17,70 +17,119 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     accountAddress = message.interactor.verified_accounts[0] ?? message.interactor.custody_address;
   }
 
-  if (message?.input) {
-    text = message.input;
-    const poolRes = await fetch(`https://api.geckoterminal.com/api/v2/search/pools?query=${text}&page=1`);
-    const poolJson = await poolRes.json();
-    const poolData = poolJson.data;
-    // the pool is the poolData with highest attributes.reserve_in_usd value (most liquidity)
-    pool = poolData.reduce((prev: any, current: any) => {
-      return Number(prev.attributes.reserve_in_usd) > Number(current.attributes.reserve_in_usd) ? prev : current;
-    }, { attributes: { reserve_in_usd: '0' },
+  try {
+    if (message?.input) {
+      text = message.input;
+      const poolRes = await fetch(`https://api.geckoterminal.com/api/v2/search/pools?query=${text}&page=1`);
+      const poolJson = await poolRes.json();
+      const poolData = poolJson.data;
+      // the pool is the poolData with highest attributes.reserve_in_usd value (most liquidity)
+      pool = poolData.reduce((prev: any, current: any) => {
+        return Number(prev.attributes.reserve_in_usd) > Number(current.attributes.reserve_in_usd) ? prev : current;
+      }, { attributes: { reserve_in_usd: '0' },
+      });
+      const { attributes, id } = pool;
+      const poolAddress = attributes.address;
+      // the chain is the word before "_0x" in the id
+      chain = id.split('_0x')[0];
+      // get the chart data
+      const ohlcvRes = await fetch(`https://api.geckoterminal.com/api/v2/networks/${chain}/pools/${poolAddress}/ohlcv/day`);
+      const ohlcvJson = await ohlcvRes.json();
+      ohlcsv = ohlcvJson.data.attributes.ohlcv_list;
+    } else {
+      return new NextResponse(
+        getFrameHtmlResponse({
+          buttons: [
+            {
+              label: 'Load token chart!',
+            },
+            {
+              action: 'link',
+              label: 'Thank you, Coingecko!',
+              target: 'https://www.coingecko.com',
+            },
+          ],
+          image: {
+            src: `${NEXT_PUBLIC_URL}/poster-w-squiggle.png`,
+            aspectRatio: '1:1',
+          },
+          input: {
+            text: 'Enter a token name to view chart',
+          },
+          postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
+        })
+      );
+    }
+  
+    const chartOptions = getChartOptions(text, ohlcsv, pool, chain);
+    const chartRes = await fetch(`https://quickchart.io/apex-charts/render`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        config: chartOptions,
+        height: 400,
+        width: 800,
+      }),
     });
-    const { attributes, id } = pool;
-    const poolAddress = attributes.address;
-    // the chain is the word before "_0x" in the id
-    chain = id.split('_0x')[0];
-    // get the chart data
-    const ohlcvRes = await fetch(`https://api.geckoterminal.com/api/v2/networks/${chain}/pools/${poolAddress}/ohlcv/day`);
-    const ohlcvJson = await ohlcvRes.json();
-    ohlcsv = ohlcvJson.data.attributes.ohlcv_list;
-  }
-
-  const chartOptions = getChartOptions(text, ohlcsv, pool, chain);
-  const chartRes = await fetch(`https://quickchart.io/apex-charts/render`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      config: chartOptions,
-      height: 400,
-      width: 800,
-    }),
-  });
-  const chartBlob = await chartRes.blob();
-  const chartBuffer = await chartBlob.arrayBuffer(); // Convert the Blob to an ArrayBuffer
-  const chartBase64 = Buffer.from(chartBuffer).toString('base64'); // Convert the ArrayBuffer to a Base64 string
-
-  if (message?.button === 2) {
-    return NextResponse.redirect(
-      `https://www.coingecko.com/en/coins/${text}`,
-      { status: 302 },
+    const chartBlob = await chartRes.blob();
+    const chartBuffer = await chartBlob.arrayBuffer(); // Convert the Blob to an ArrayBuffer
+    const chartBase64 = Buffer.from(chartBuffer).toString('base64'); // Convert the ArrayBuffer to a Base64 string
+  
+    if (message?.button === 2) {
+      return NextResponse.redirect(
+        `https://www.coingecko.com/en/coins/${text}`,
+        { status: 302 },
+      );
+    }
+  
+    return new NextResponse(
+      getFrameHtmlResponse({
+        buttons: [
+          {
+            label: `Load new chart`,
+          },
+          {
+            action: 'link',
+            label: 'View on Coingecko',
+            target: `https://www.coingecko.com/en/coins/${text}`,
+          },
+        ],
+        input: {
+          text: "Enter new token!",
+        },
+        image: {
+          src: `data:image/png;base64,${chartBase64}`,
+        },
+        postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
+      }),
     );
+  } catch (e) {
+    return new NextResponse(
+      getFrameHtmlResponse({
+        buttons: [
+          {
+            label: 'Load token chart!',
+          },
+          {
+            action: 'link',
+            label: 'Thank you, Coingecko!',
+            target: 'https://www.coingecko.com',
+          },
+        ],
+        image: {
+          src: `${NEXT_PUBLIC_URL}/poster-w-squiggle.png`,
+          aspectRatio: '1:1',
+        },
+        input: {
+          text: 'Enter a token name to view chart',
+        },
+        postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
+      })
+    );
+  
   }
-
-  return new NextResponse(
-    getFrameHtmlResponse({
-      buttons: [
-        {
-          label: `Load new chart`,
-        },
-        {
-          action: 'link',
-          label: 'View on Coingecko',
-          target: `https://www.coingecko.com/en/coins/${text}`,
-        },
-      ],
-      input: {
-        text: "Enter new token!",
-      },
-      image: {
-        src: `data:image/png;base64,${chartBase64}`,
-      },
-      postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
-    }),
-  );
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
