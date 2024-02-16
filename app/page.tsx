@@ -5,7 +5,7 @@ import { NEXT_PUBLIC_URL } from './config';
 const frameMetadata = getFrameMetadata({
   buttons: [
     {
-      label: 'Load token chart!',
+      label: 'Load chart!',
     },
     {
       action: 'link',
