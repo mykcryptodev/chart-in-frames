@@ -5,16 +5,12 @@ import { NEXT_PUBLIC_URL } from './config';
 const frameMetadata = getFrameMetadata({
   buttons: [
     {
-      label: 'Story time!',
+      label: 'Load token chart!',
     },
     {
       action: 'link',
-      label: 'Link to Google',
-      target: 'https://www.google.com',
-    },
-    {
-      label: 'Redirect to pictures',
-      action: 'post_redirect',
+      label: 'Ty Coingecko',
+      target: 'https://www.coingecko.com',
     },
   ],
   image: {
@@ -22,7 +18,7 @@ const frameMetadata = getFrameMetadata({
     aspectRatio: '1:1',
   },
   input: {
-    text: 'Tell me something',
+    text: 'Enter a token name to view chart',
   },
   postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
 });

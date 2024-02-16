@@ -53,9 +53,9 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   const chartBuffer = await chartBlob.arrayBuffer(); // Convert the Blob to an ArrayBuffer
   const chartBase64 = Buffer.from(chartBuffer).toString('base64'); // Convert the ArrayBuffer to a Base64 string
 
-  if (message?.button === 3) {
+  if (message?.button === 2) {
     return NextResponse.redirect(
-      'https://www.google.com/search?q=cute+dog+pictures&tbm=isch&source=lnms',
+      `https://www.coingecko.com/en/coins/${text}`,
       { status: 302 },
     );
   }
@@ -65,6 +65,11 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       buttons: [
         {
           label: `Load new chart`,
+        },
+        {
+          action: 'link',
+          label: 'Ty Coingecko',
+          target: 'https://www.coingecko.com',
         },
       ],
       input: {
