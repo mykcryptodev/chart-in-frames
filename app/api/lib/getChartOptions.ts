@@ -63,7 +63,7 @@ export const getChartOptions = (tokenName: string, ohlc: [number, number, number
     },
     subtitle: {
       text: // uppercase the first letter of the chain
-        `${pool.attributes.price_change_percentage.h24}% 24h Price • ${Number(pool.attributes.reserve_in_usd).toLocaleString([], { style: 'currency', currency: 'usd' })} Liquidity • ${Number(pool.attributes.volume_usd.h24).toLocaleString([], { style: 'currency', currency: 'usd' })} 24h volume • ${Number(pool.attributes.market_cap_usd).toLocaleString([], { style: 'currency', currency: 'usd' })} Marketcap`,
+        `24h price ${pool.attributes.price_change_percentage.h24}% • ${Number(pool.attributes.volume_usd.h24).toLocaleString([], { style: 'currency', currency: 'usd' })} 24h volume • ${Number(pool.attributes.market_cap_usd).toLocaleString([], { style: 'currency', currency: 'usd' })} marketcap • liquidity ${Number(pool.attributes.reserve_in_usd).toLocaleString([], { style: 'currency', currency: 'usd' })}`,
       align: 'left'
     },
     xaxis: {
