@@ -36,7 +36,20 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   }
 
   const chartOptions = getChartOptions(text, ohlcsv);
-  console.log(`https://quickchart.io/apex-charts/render?config=${JSON.stringify(chartOptions)}`);
+  const chartRes = await fetch(`https://quickchart.io/apex-charts/render`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      config: chartOptions,
+      height: 300,
+      width: 600,
+    }),
+  });
+  const chartBlob = await chartRes.blob();
+  const chartUrl = URL.createObjectURL(chartBlob);
+  console.log(chartUrl);
 
   if (message?.button === 3) {
     return NextResponse.redirect(
@@ -57,7 +70,8 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       },
       image: {
         // src: `${NEXT_PUBLIC_URL}/park-1.png`,
-        src: `https://quickchart.io/apex-charts/render?config=${JSON.stringify(chartOptions)}`,
+        // src: `https://quickchart.io/apex-charts/render?config=${JSON.stringify(chartOptions)}`,
+        src: chartUrl,
       },
       postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
     }),
