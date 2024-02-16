@@ -9,7 +9,7 @@ const frameMetadata = getFrameMetadata({
     },
     {
       action: 'link',
-      label: 'Ty Coingecko',
+      label: 'Thank you, Coingecko!',
       target: 'https://www.coingecko.com',
     },
   ],

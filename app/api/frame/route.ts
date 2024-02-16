@@ -68,8 +68,8 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
         },
         {
           action: 'link',
-          label: 'Ty Coingecko',
-          target: 'https://www.coingecko.com',
+          label: 'View on Coingecko',
+          target: `https://www.coingecko.com/en/coins/${text}`,
         },
       ],
       input: {
