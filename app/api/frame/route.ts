@@ -45,8 +45,8 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     },
     body: JSON.stringify({
       config: chartOptions,
-      height: 300,
-      width: 600,
+      height: 800,
+      width: 800,
     }),
   });
   const chartBlob = await chartRes.blob();
