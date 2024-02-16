@@ -58,12 +58,12 @@ export const getChartOptions = (tokenName: string, ohlc: [number, number, number
       }
     },
     title: {
-      text: pool.attributes.name,
+      text: `${pool.attributes.name} on ${chain.charAt(0).toUpperCase() + chain.slice(1)}`,
       align: 'left'
     },
     subtitle: {
       text: // uppercase the first letter of the chain
-        `${chain.charAt(0).toUpperCase() + chain.slice(1)} • ${pool.attributes.price_change_percentage.h24}% 24h price +/- • ${Number(pool.attributes.reserve_in_usd).toLocaleString([], { style: 'currency', currency: 'usd' })} Liquidity • ${Number(pool.attributes.volume_usd.h24).toLocaleString([], { style: 'currency', currency: 'usd' })} 24h volume • ${Number(pool.attributes.market_cap_usd).toLocaleString([], { style: 'currency', currency: 'usd' })} Marketcap`,
+        `${pool.attributes.price_change_percentage.h24}% 24h Price • ${Number(pool.attributes.reserve_in_usd).toLocaleString([], { style: 'currency', currency: 'usd' })} Liquidity • ${Number(pool.attributes.volume_usd.h24).toLocaleString([], { style: 'currency', currency: 'usd' })} 24h volume • ${Number(pool.attributes.market_cap_usd).toLocaleString([], { style: 'currency', currency: 'usd' })} Marketcap`,
       align: 'left'
     },
     xaxis: {
