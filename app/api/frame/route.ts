@@ -2,9 +2,9 @@ import { FrameRequest, getFrameMessage, getFrameHtmlResponse } from '@coinbase/o
 import { NextRequest, NextResponse } from 'next/server';
 import { NEXT_PUBLIC_URL } from '../../config';
 import { getChartOptions } from '../lib/getChartOptions';
+import { throwErr } from '../lib/throwErr';
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
-  let accountAddress: string | undefined = '';
   let text: string | undefined = '';
   let pool: any | undefined = {};
   let chain: string = '';
@@ -13,8 +13,8 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   const body: FrameRequest = await req.json();
   const { isValid, message } = await getFrameMessage(body, { neynarApiKey: 'NEYNAR_ONCHAIN_KIT' });
 
-  if (isValid) {
-    accountAddress = message.interactor.verified_accounts[0] ?? message.interactor.custody_address;
+  if (!isValid) {
+    return throwErr('pls-enter.png');
   }
 
   try {
@@ -37,28 +37,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       const ohlcvJson = await ohlcvRes.json();
       ohlcsv = ohlcvJson.data.attributes.ohlcv_list;
     } else {
-      return new NextResponse(
-        getFrameHtmlResponse({
-          buttons: [
-            {
-              label: 'Load token chart!',
-            },
-            {
-              action: 'link',
-              label: 'Thank you, Coingecko!',
-              target: 'https://www.coingecko.com',
-            },
-          ],
-          image: {
-            src: `${NEXT_PUBLIC_URL}/pls-enter.png`,
-            aspectRatio: '1:1',
-          },
-          input: {
-            text: 'Enter a token name to view chart',
-          },
-          postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
-        })
-      );
+      return throwErr('pls-enter.png');
     }
   
     const chartOptions = getChartOptions(text, ohlcsv, pool, chain);
@@ -106,29 +85,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       }),
     );
   } catch (e) {
-    return new NextResponse(
-      getFrameHtmlResponse({
-        buttons: [
-          {
-            label: 'Load token chart!',
-          },
-          {
-            action: 'link',
-            label: 'Thank you, Coingecko!',
-            target: 'https://www.coingecko.com',
-          },
-        ],
-        image: {
-          src: `${NEXT_PUBLIC_URL}/not-found.png`,
-          aspectRatio: '1:1',
-        },
-        input: {
-          text: 'Enter a token name to view chart',
-        },
-        postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
-      })
-    );
-  
+    return throwErr('not-found.png');
   }
 }
 
