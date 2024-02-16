@@ -68,7 +68,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
         },
       ],
       input: {
-        text: "Enter another token name to see its chart! 📈📉📊",
+        text: "Enter new token!",
       },
       image: {
         // src: `${NEXT_PUBLIC_URL}/park-1.png`,
