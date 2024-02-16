@@ -1,6 +1,4 @@
-import { type ApexOptions } from 'apexcharts';
-
-export const getChartOptions = (tokenName: string, ohlc: [number, number, number, number, number, number][]) => {
+export const getChartOptions = (tokenName: string, ohlc: [number, number, number, number, number, number][], pool: any, chain: string) => {
   return {
     series: [{
       name: tokenName,
@@ -58,6 +56,15 @@ export const getChartOptions = (tokenName: string, ohlc: [number, number, number
         stops: [0, 90, 100],
         colorStops: []
       }
+    },
+    title: {
+      text: pool.attributes.name,
+      align: 'left'
+    },
+    subtitle: {
+      text: // uppercase the first letter of the chain
+        `${chain.charAt(0).toUpperCase() + chain.slice(1)} • 24h ${pool.attributes.price_change_percentage.h24}%`,
+      align: 'left'
     },
     xaxis: {
       type: 'datetime',

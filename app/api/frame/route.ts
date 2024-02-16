@@ -6,6 +6,8 @@ import { getChartOptions } from '../lib/getChartOptions';
 async function getResponse(req: NextRequest): Promise<NextResponse> {
   let accountAddress: string | undefined = '';
   let text: string | undefined = '';
+  let pool: any | undefined = {};
+  let chain: string = '';
   let ohlcsv: [number, number, number, number, number, number][] = [];
 
   const body: FrameRequest = await req.json();
@@ -21,21 +23,21 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     const poolJson = await poolRes.json();
     const poolData = poolJson.data;
     // the pool is the poolData with highest attributes.reserve_in_usd value (most liquidity)
-    const pool = poolData.reduce((prev: any, current: any) => {
+    pool = poolData.reduce((prev: any, current: any) => {
       return Number(prev.attributes.reserve_in_usd) > Number(current.attributes.reserve_in_usd) ? prev : current;
     }, { attributes: { reserve_in_usd: '0' },
     });
     const { attributes, id } = pool;
     const poolAddress = attributes.address;
     // the chain is the word before "_0x" in the id
-    const chain = id.split('_0x')[0];
+    chain = id.split('_0x')[0];
     // get the chart data
     const ohlcvRes = await fetch(`https://api.geckoterminal.com/api/v2/networks/${chain}/pools/${poolAddress}/ohlcv/day`);
     const ohlcvJson = await ohlcvRes.json();
     ohlcsv = ohlcvJson.data.attributes.ohlcv_list;
   }
 
-  const chartOptions = getChartOptions(text, ohlcsv);
+  const chartOptions = getChartOptions(text, ohlcsv, pool, chain);
   const chartRes = await fetch(`https://quickchart.io/apex-charts/render`, {
     method: 'POST',
     headers: {
@@ -62,11 +64,11 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     getFrameHtmlResponse({
       buttons: [
         {
-          label: `Something: ${text} 🌲🌈`,
+          label: `Load new chart`,
         },
       ],
       input: {
-        text: "Ya gotta say it",
+        text: "Enter another token name to see its chart! 📈📉📊",
       },
       image: {
         // src: `${NEXT_PUBLIC_URL}/park-1.png`,
