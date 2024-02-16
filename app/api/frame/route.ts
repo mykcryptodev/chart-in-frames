@@ -36,6 +36,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   }
 
   const chartOptions = getChartOptions(text, ohlcsv);
+  console.log(`https://quickchart.io/apex-charts/render?config=${encodeURIComponent(JSON.stringify(chartOptions))}`);
 
   if (message?.button === 3) {
     return NextResponse.redirect(
