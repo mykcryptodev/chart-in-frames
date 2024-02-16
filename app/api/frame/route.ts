@@ -76,8 +76,6 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
         text: "Enter new token!",
       },
       image: {
-        // src: `${NEXT_PUBLIC_URL}/park-1.png`,
-        // src: `https://quickchart.io/apex-charts/render?config=${JSON.stringify(chartOptions)}`,
         src: `data:image/png;base64,${chartBase64}`,
       },
       postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
